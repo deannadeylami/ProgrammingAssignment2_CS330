@@ -1,4 +1,4 @@
-# Programming Assignment 1
+# Programming Assignment 2
 # Class: CS 330-01
 # Term: Fall 2025
 # Author: Deanna Deylami & Lucas Geiger
@@ -36,8 +36,7 @@ class SteeringOutput:
 class Character:
     def __init__(self, char_id: int, steer: str, position: Vector, 
                  velocity: Vector, orientation: float, max_vel: int, 
-                 max_accel: float, target: int, arrive_radius: int, 
-                 slow_radius: int, time_to_target: int):
+                 max_accel: float, path_to_follow: int, path_offset: float):
         self.char_id = char_id
         self.steer = steer
         self.position = position
@@ -45,58 +44,20 @@ class Character:
         self.orientation = orientation
         self.max_vel = max_vel
         self.max_accel = max_accel
-        self.target = target
-        self.arrive_radius = arrive_radius
-        self.slow_radius = slow_radius
-        self.time_to_target = time_to_target
+        self.path_to_follow = path_to_follow
+        self.path_offset = path_offset
         self.rotation = 0.0
 
-# Initalize 4 characters w/ parameters from assignment
-character1 = Character(char_id=2601, 
-                       steer=1, 
-                       position=Vector([0,0]), 
+# Initalize 1 characters w/ parameters from assignment
+character1 = Character(char_id=2701, 
+                       steer=7, 
+                       position=Vector([20,95]), 
                        velocity=Vector([0,0]), 
                        orientation=0.0, 
-                       max_vel=0, 
-                       max_accel=0.0, 
-                       target=0, 
-                       arrive_radius=0, 
-                       slow_radius=0, 
-                       time_to_target=0)
-character2 = Character(char_id=2602, 
-                       steer=6, 
-                       position=Vector([-30, -50]), 
-                       velocity=Vector([2,7]), 
-                       orientation=(math.pi)/4, 
-                       max_vel=8, 
-                       max_accel=1.5, 
-                       target=1, 
-                       arrive_radius=0, 
-                       slow_radius=0, 
-                       time_to_target=0)
-character3 = Character(char_id=2603, 
-                       steer=7, 
-                       position=Vector([-50,40]), 
-                       velocity=Vector([0,8]), 
-                       orientation=(3*(math.pi))/2, 
-                       max_vel=8, 
+                       max_vel=4, 
                        max_accel=2.0, 
-                       target=1, 
-                       arrive_radius=0, 
-                       slow_radius=0,
-                       time_to_target=0)
-character4 = Character(char_id=2604, 
-                       steer=8, 
-                       position=Vector([50,75]), 
-                       velocity=Vector([-9,4]), 
-                       orientation=math.pi, 
-                       max_vel=10, 
-                       max_accel=2.0, 
-                       target=1, 
-                       arrive_radius=4, 
-                       slow_radius=32, 
-                       time_to_target=1)
-
+                       path_to_follow=1, 
+                       path_offset=0.04)
 # Move Section
 def compute_steer(character: Character):
     if character.steer == 1:
@@ -228,11 +189,11 @@ def record(sim_time, char_id, pos_x, pos_z, vel_x, vel_z, lin_acc_x, lin_acc_z, 
     with open("output.txt", "a") as file:
         file.write(f"{sim_time}, {char_id}, {pos_x}, {pos_z}, {vel_x:}, {vel_z}, {lin_acc_x}, {lin_acc_z}, {orientation}, {steer_behavior}, {coll_status}\n")
 
-characters = [character1, character2, character3, character4]
+characters = [character1]
 
 time_step = 0.5
 start_time = 0
-end_time = 50
+end_time = 125
 
 # Run the thang!!! (from 0 to 50 with 0.5 as increment)
 open("output.txt", "w").close()
