@@ -27,6 +27,28 @@ class Vector:
             self.vector[0] = self.vector[0] / vector_len
             self.vector[1] = self.vector[1] / vector_len
         return self
+    
+    # Calculate scalar dot product of two 2D vectors
+    # Formula: A · B 
+    def vector_dot(A,B):
+        sum = (A[0] * B[0]) + (A[1] * B[1])
+        return (sum)
+
+    # Calculate distance between two points in 2D.
+    # Formula used: d = √[(x₂ - x₁)² + (y₂ - y₁)²]
+    def distance_points(A, B):
+        distance1 = (B[0] - A[0]) ** 2
+        distance2 = (B[1] - A[1]) ** 2
+        distance = math.sqrt(distance1 + distance2)
+        return (distance)
+    
+    def closest_point(Q, A, B):
+        Q_A = (Q[0] - A[0], Q[1] - A[1])
+        B_A = (B[0] - A[0], B[1] - A[1])
+        numerator = Vector.vector_dot(Q_A, B_A)
+        denominator = Vector.vector_dot(B_A, B_A)
+        T = numerator / denominator
+        return ((A[0] + (T * B_A[0])), (A[1] + (T * B_A[1])))
 
 class SteeringOutput:
     def __init__(self):
@@ -48,9 +70,46 @@ class Character:
         self.path_offset = path_offset
         self.rotation = 0.0
 
-# Initalize 1 characters w/ parameters from assignment
+class Path:
+    def __init__(self):
+        self.ID = 0
+        self.x = []
+        self.z = []
+        self.params = []
+        self.distance = []
+        self.segments = 0
+
+    def path_assemble(self, ID, X, Z):
+        self.ID = ID
+        self.x = X
+        self.z = Z
+        self.segments = len(X) - 1
+        
+        self.distance = [0] * (self.segments + 1)
+        for i in range(1, self.segments + 1):
+            XZ_1 = (X[i-1], Z[i-1])
+            XZ_2 = (X[i], Z[i]) 
+            XZ_distance = Vector.distance_points(XZ_1, XZ_2)
+            self.distance[i] = self.distance[i-1] + XZ_distance
+        
+        self.param = [0] * (self.segments + 1)
+        for i in range(1, self.segments + 1):
+            self.param[i] = self.distance[i] / max(self.distance)
+
+
+
+
+    def get_params(self, position):
+        # LUCAS here
+        return
+    
+    def get_position(self, param):
+        # LUCAS here
+        return
+
+# Initalize 1 character w/ parameters from assignment
 character1 = Character(char_id=2701, 
-                       steer=7, 
+                       steer=11, 
                        position=Vector([20,95]), 
                        velocity=Vector([0,0]), 
                        orientation=0.0, 
@@ -58,6 +117,19 @@ character1 = Character(char_id=2701,
                        max_accel=2.0, 
                        path_to_follow=1, 
                        path_offset=0.04)
+
+# Path Vertices parameters given by assignment.
+path_vertices = [
+    (0, 90),
+    (-20, 65),
+    (20, 40),
+    (-40, 15),
+    (40, -10),
+    (-60, -35),
+    (60, -60),
+    (0, -85)
+]
+
 # Move Section
 def compute_steer(character: Character):
     if character.steer == 1:
@@ -68,12 +140,15 @@ def compute_steer(character: Character):
         steering = steer_flee(character, character1)
     if character.steer == 8:
         steering = steer_arrive(character, character1)
-
+    if character.steer == 11:
+        steering = steer_follow(character, character1)
     return steering
 
-# continue whatever character is doing 
-# but currently it just does nothing so idk 
-# named it this cuz just "continue" is a reserved word BOOOO
+def steer_follow(character: Character):
+    result = SteeringOutput()
+    # LUCAS here
+    return result
+
 def steer_continue(character: Character): 
     result = SteeringOutput()
     return result
@@ -161,6 +236,7 @@ def steer_arrive(character: Character, target: Character):
     if result.linear.length() > character.max_accel:
         result.linear.normalize()
         result.linear.vector[0] *= character.max_accel
+        result.linear.vector[1] *= character.max_accel
 
     # Output steering 
     result.angular = 0
